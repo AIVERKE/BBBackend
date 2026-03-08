@@ -1,0 +1,42 @@
+# Combined Git Ignore for Project Root
+
+# Logs
+**/logs
+*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+**/lerna-debug.log*
+
+# Dependencies
+**/node_modules
+
+# Compiled output
+**/dist
+**/dist-ssr
+
+# Environment variables
+**/.env
+**/.env.local
+**/.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# NestJS
+**/.nestcli.json
+
+# Local Uploads (Imágenes)
+BBBackend/uploads/*
+!BBBackend/uploads/.gitkeep
+
+# IDE files
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
