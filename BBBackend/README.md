@@ -57,11 +57,13 @@ El sistema utiliza migraciones para asegurar la integridad de la estructura.
 npm run migration:run
 ```
 
-### 4. Poblado de Datos (Seeds)
-Para facilitar el desarrollo, hemos incluido un script masivo de datos de prueba:
-1. Localiza el archivo en `docs/seeds/seed-data.sql`.
-2. Ejecuta su contenido en tu gestor de base de datos (pgAdmin, DBeaver, etc.).
-   - *Este script creará 3 locales ficticios con menús y personal listo para usar.*
+### 4. Poblado de Datos (Seeding)
+Para facilitar el desarrollo, hemos incluido un script automatizado de generación masiva de datos:
+```bash
+# Limpia la base de datos y genera 3 locales, usuarios, productos y pedidos históricos
+npm run seed
+```
+- *Consulta [test_credentials.md](../test_credentials.md) para ver las cuentas generadas automáticamente.*
 
 ### 5. Iniciar el Servidor
 ```bash
