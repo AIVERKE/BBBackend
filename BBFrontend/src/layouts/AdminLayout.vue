@@ -42,63 +42,100 @@
       </div>
 
       <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-        <p class="px-3 text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 mt-4">Operations</p>
         
-        <router-link 
-          to="/cashier" 
-          class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all"
-          :class="isCurrentRoute('/cashier') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
-          @click="closeMobileMenu"
-        >
-          <span class="material-symbols-outlined" :class="{ 'text-white/80': isCurrentRoute('/cashier') }">point_of_sale</span>
-          Cashier
-        </router-link>
+        <!-- Super Admin Area -->
+        <template v-if="isSuperUser">
+          <p class="px-3 text-xs font-bold text-red-400 uppercase tracking-widest mb-2 mt-4">Super Admin</p>
+          <router-link 
+            to="/admin/tenants" 
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all"
+            :class="isCurrentRoute('/admin/tenants') ? 'bg-red-500 text-white shadow-md shadow-red-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
+            @click="closeMobileMenu"
+          >
+            <span class="material-symbols-outlined" :class="{ 'text-white/80': isCurrentRoute('/admin/tenants') }">public</span>
+            Global Tenants
+          </router-link>
 
-        <p class="px-3 text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 mt-6">Management</p>
+          <router-link 
+            to="/admin/global-analytics" 
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all mt-1"
+            :class="isCurrentRoute('/admin/global-analytics') ? 'bg-red-500 text-white shadow-md shadow-red-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
+            @click="closeMobileMenu"
+          >
+            <span class="material-symbols-outlined" :class="{ 'text-white/80': isCurrentRoute('/admin/global-analytics') }">query_stats</span>
+            Global Analytics
+          </router-link>
 
-        <router-link 
-          v-if="isAdmin"
-          to="/admin/menu" 
-          class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all"
-          :class="isCurrentRoute('/admin/menu') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
-          @click="closeMobileMenu"
-        >
-          <span class="material-symbols-outlined" :class="{ 'text-white/80': isCurrentRoute('/admin/menu') }">restaurant_menu</span>
-          Menu Editor
-        </router-link>
+          <router-link 
+            to="/admin/global-users" 
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all mt-1"
+            :class="isCurrentRoute('/admin/global-users') ? 'bg-red-500 text-white shadow-md shadow-red-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
+            @click="closeMobileMenu"
+          >
+            <span class="material-symbols-outlined" :class="{ 'text-white/80': isCurrentRoute('/admin/global-users') }">group</span>
+            Global Users
+          </router-link>
+        </template>
 
-        <router-link 
-          v-if="isAdmin"
-          to="/admin/analytics" 
-          class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all"
-          :class="isCurrentRoute('/admin/analytics') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
-          @click="closeMobileMenu"
-        >
-          <span class="material-symbols-outlined" :class="{ 'text-white/80': isCurrentRoute('/admin/analytics') }">monitoring</span>
-          Analytics
-        </router-link>
+        <template v-if="!isSuperUser">
+          <p class="px-3 text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 mt-4">Operations</p>
+          
+          <router-link 
+            to="/cashier" 
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all"
+            :class="isCurrentRoute('/cashier') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
+            @click="closeMobileMenu"
+          >
+            <span class="material-symbols-outlined" :class="{ 'text-white/80': isCurrentRoute('/cashier') }">point_of_sale</span>
+            Cashier
+          </router-link>
 
-        <router-link 
-          v-if="isAdmin"
-          to="/admin/staff" 
-          class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all"
-          :class="isCurrentRoute('/admin/staff') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
-          @click="closeMobileMenu"
-        >
-          <span class="material-symbols-outlined" :class="{ 'text-white/80': isCurrentRoute('/admin/staff') }">badge</span>
-          Staff
-        </router-link>
+          <p class="px-3 text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 mt-6">Management</p>
 
-        <router-link 
-          v-if="isAdmin"
-          to="/admin/settings" 
-          class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all"
-          :class="isCurrentRoute('/admin/settings') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
-          @click="closeMobileMenu"
-        >
-          <span class="material-symbols-outlined" :class="{ 'text-white/80': isCurrentRoute('/admin/settings') }">settings</span>
-          Settings
-        </router-link>
+          <router-link 
+            v-if="isAdmin"
+            to="/admin/menu" 
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all"
+            :class="isCurrentRoute('/admin/menu') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
+            @click="closeMobileMenu"
+          >
+            <span class="material-symbols-outlined" :class="{ 'text-white/80': isCurrentRoute('/admin/menu') }">restaurant_menu</span>
+            Menu Editor
+          </router-link>
+
+          <router-link 
+            v-if="isAdmin"
+            to="/admin/analytics" 
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all"
+            :class="isCurrentRoute('/admin/analytics') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
+            @click="closeMobileMenu"
+          >
+            <span class="material-symbols-outlined" :class="{ 'text-white/80': isCurrentRoute('/admin/analytics') }">monitoring</span>
+            Analytics
+          </router-link>
+
+          <router-link 
+            v-if="isAdmin"
+            to="/admin/staff" 
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all"
+            :class="isCurrentRoute('/admin/staff') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
+            @click="closeMobileMenu"
+          >
+            <span class="material-symbols-outlined" :class="{ 'text-white/80': isCurrentRoute('/admin/staff') }">badge</span>
+            Staff
+          </router-link>
+
+          <router-link 
+            v-if="isAdmin"
+            to="/admin/settings" 
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all"
+            :class="isCurrentRoute('/admin/settings') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'"
+            @click="closeMobileMenu"
+          >
+            <span class="material-symbols-outlined" :class="{ 'text-white/80': isCurrentRoute('/admin/settings') }">settings</span>
+            Settings
+          </router-link>
+        </template>
       </nav>
 
       <div class="p-4 border-t border-slate-200/50 dark:border-slate-800/50">
@@ -145,10 +182,14 @@ const currentUser = ref<any>(null);
 const tenant = ref<Tenant | null>(null);
 const mobileMenuOpen = ref(false);
 
+const isSuperUser = computed(() => {
+  if (!currentUser.value || !currentUser.value.role) return false;
+  return currentUser.value.role.toUpperCase() === 'SUPER_USER';
+});
+
 const isAdmin = computed(() => {
   if (!currentUser.value || !currentUser.value.role) return false;
-  const r = currentUser.value.role.toUpperCase();
-  return r === 'ADMIN' || r === 'SUPER_USER';
+  return currentUser.value.role.toUpperCase() === 'ADMIN';
 });
 
 onMounted(async () => {

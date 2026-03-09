@@ -14,6 +14,13 @@ import { TenantId } from '../common/decorators/tenant-id.decorator';
 export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
+  @Get('global')
+  @Roles(UserRole.SUPER_USER)
+  @ApiOperation({ summary: 'Métricas globales de la plataforma (Solo Super User)' })
+  getGlobal() {
+    return this.analyticsService.getGlobalSummary();
+  }
+
   @Get('summary')
   @Roles(UserRole.ADMIN, UserRole.SUPER_USER)
   @ApiOperation({ summary: 'Resumen de ventas diario y mensual (Solo Admin)' })

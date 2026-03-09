@@ -16,4 +16,20 @@ export class CreateTenantDto {
   @IsString()
   @IsOptional()
   logoUrl?: string;
+
+  // Optional fields for creating an initial Admin User alongside the tenant
+  @ApiProperty({ example: 'Admin Name', description: 'Name of the first admin', required: false })
+  @IsString()
+  @IsOptional()
+  adminName?: string;
+
+  @ApiProperty({ example: 'admin@business.com', description: 'Email for the first admin', required: false })
+  @IsString()
+  @IsOptional()
+  adminEmail?: string;
+
+  @ApiProperty({ example: 'password123', description: 'Password for the first admin', required: false })
+  @IsString()
+  @IsOptional()
+  adminPassword?: string;
 }

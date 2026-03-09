@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, UseGuards, Req, ForbiddenException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -19,7 +19,10 @@ export class UsersController {
   @Roles(UserRole.ADMIN, UserRole.SUPER_USER)
   @ApiOperation({ summary: 'Crear un usuario de staff (Solo Admin)' })
   @ApiResponse({ status: 201, description: 'Usuario creado' })
-  create(@Body() createUserDto: CreateUserDto) {
+  create(@Req() req: any, @Body() createUserDto: CreateUserDto) {
+    if (req.user.role !== UserRole.SUPER_USER) {
+      createUserDto.tenantId = req.user.tenantId;
+    }
     return this.usersService.create(createUserDto);
   }
 
@@ -29,8 +32,9 @@ export class UsersController {
   @Roles(UserRole.ADMIN, UserRole.SUPER_USER)
   @ApiOperation({ summary: 'Listar usuarios de staff (Solo Admin)' })
   @ApiQuery({ name: 'tenantId', type: Number, required: false })
-  findAll(@Query('tenantId') tenantId?: number) {
-    return this.usersService.findAll(tenantId ? Number(tenantId) : undefined);
+  findAll(@Req() req: any, @Query('tenantId') tenantId?: number) {
+    const filterTenantId = req.user.role === UserRole.SUPER_USER ? (tenantId ? Number(tenantId) : undefined) : req.user.tenantId;
+    return this.usersService.findAll(filterTenantId);
   }
 
   @Get(':id')
@@ -38,8 +42,9 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.SUPER_USER)
   @ApiOperation({ summary: 'Obtener detalle de un usuario (Solo Admin)' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findOne(id);
+  findOne(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    const enforceTenantId = req.user.role === UserRole.SUPER_USER ? undefined : req.user.tenantId;
+    return this.usersService.findOne(id, enforceTenantId);
   }
 
   @Patch(':id')
@@ -47,8 +52,12 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.SUPER_USER)
   @ApiOperation({ summary: 'Actualizar un usuario (Solo Admin)' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  update(@Req() req: any, @Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
+    if (req.user.role !== UserRole.SUPER_USER && updateUserDto.tenantId && updateUserDto.tenantId !== req.user.tenantId) {
+       throw new ForbiddenException('Cannot change user to a different tenant');
+    }
+    const enforceTenantId = req.user.role === UserRole.SUPER_USER ? undefined : req.user.tenantId;
+    return this.usersService.update(id, updateUserDto, enforceTenantId);
   }
 
   @Delete(':id')
@@ -56,7 +65,8 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_USER, UserRole.ADMIN)
   @ApiOperation({ summary: 'Eliminar un usuario (Solo Admin/SuperUser)' })
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.remove(id);
+  remove(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    const enforceTenantId = req.user.role === UserRole.SUPER_USER ? undefined : req.user.tenantId;
+    return this.usersService.remove(id, enforceTenantId);
   }
 }

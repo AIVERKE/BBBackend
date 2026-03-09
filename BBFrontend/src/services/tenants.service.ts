@@ -14,12 +14,29 @@ export interface UpdateTenantDto {
   isActive?: boolean;
 }
 
+export interface CreateTenantDto {
+  businessName: string;
+  isActive?: boolean;
+  logoUrl?: string;
+  adminName?: string;
+  adminEmail?: string;
+  adminPassword?: string;
+}
+
 export const tenantsService = {
   /**
    * Fetch tenant details by ID
    */
   async getTenant(id: number): Promise<Tenant> {
     const response = await api.get(`/tenants/${id}`);
+    return response.data;
+  },
+
+  /**
+   * Create a new tenant (and optional admin user)
+   */
+  async createTenant(data: CreateTenantDto): Promise<Tenant> {
+    const response = await api.post('/tenants', data);
     return response.data;
   },
 

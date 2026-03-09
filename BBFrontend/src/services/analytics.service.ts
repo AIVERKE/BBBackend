@@ -1,5 +1,12 @@
 import api from './api';
 
+export interface GlobalSummary {
+  activeTenants: number;
+  totalUsers: number;
+  totalOrders: number;
+  totalRevenue: number;
+}
+
 export interface SalesSummary {
   today: {
     total: number;
@@ -32,6 +39,11 @@ export interface EndOfDayReport {
 }
 
 export const analyticsService = {
+  async getGlobalSummary(): Promise<GlobalSummary> {
+    const response = await api.get('/analytics/global');
+    return response.data;
+  },
+
   async getSummary(): Promise<SalesSummary> {
     const response = await api.get('/analytics/summary');
     return response.data;

@@ -4,17 +4,37 @@ import { Repository } from 'typeorm';
 import { Tenant } from '../entities/tenant.entity';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
+import { UsersService } from '../users/users.service';
+import { UserRole } from '../common/enums/database.enum';
 
 @Injectable()
 export class TenantsService {
   constructor(
     @InjectRepository(Tenant)
     private readonly tenantRepository: Repository<Tenant>,
+    private readonly usersService: UsersService,
   ) {}
 
   async create(dto: CreateTenantDto): Promise<Tenant> {
-    const tenant = this.tenantRepository.create(dto);
-    return this.tenantRepository.save(tenant);
+    const tenant = this.tenantRepository.create({
+      businessName: dto.businessName,
+      isActive: dto.isActive,
+      logoUrl: dto.logoUrl,
+    });
+    const savedTenant = await this.tenantRepository.save(tenant);
+
+    if (dto.adminEmail && dto.adminPassword) {
+      // Create associated admin user
+      await this.usersService.create({
+        email: dto.adminEmail,
+        password: dto.adminPassword,
+        fullName: dto.adminName || 'Admin ' + savedTenant.businessName,
+        role: UserRole.ADMIN,
+        tenantId: savedTenant.id,
+      });
+    }
+
+    return savedTenant;
   }
 
   async findAll(): Promise<Tenant[]> {

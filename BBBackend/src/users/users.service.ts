@@ -39,8 +39,12 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  async findOne(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+  async findOne(id: number, tenantId?: number): Promise<User> {
+    const where: any = { id };
+    if (tenantId) {
+      where.tenantId = tenantId;
+    }
+    const user = await this.userRepository.findOne({ where });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
@@ -54,16 +58,16 @@ export class UsersService {
       .getOne();
   }
 
-  async update(id: number, dto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
+  async update(id: number, dto: UpdateUserDto, tenantId?: number): Promise<User> {
+    const user = await this.findOne(id, tenantId);
     this.userRepository.merge(user, dto);
     const updatedUser = await this.userRepository.save(user);
     delete (updatedUser as any).passwordHash;
     return updatedUser;
   }
 
-  async remove(id: number): Promise<void> {
-    const user = await this.findOne(id);
+  async remove(id: number, tenantId?: number): Promise<void> {
+    const user = await this.findOne(id, tenantId);
     await this.userRepository.remove(user);
   }
 }

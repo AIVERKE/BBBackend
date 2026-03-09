@@ -180,7 +180,9 @@ const handleLogin = async () => {
     if (username.value.includes('@')) {
       const response = await authService.loginUser(username.value, password.value);
       const r = response.role ? response.role.toUpperCase() : '';
-      if (r === 'ADMIN' || r === 'EMPLOYEE' || r === 'SUPER_USER') {
+      if (r === 'SUPER_USER') {
+        router.push('/admin/tenants');
+      } else if (r === 'ADMIN' || r === 'EMPLOYEE') {
         router.push('/cashier');
       } else {
         router.push('/');

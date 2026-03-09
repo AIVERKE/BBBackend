@@ -8,6 +8,9 @@ import MenuEditorView from '../views/MenuEditorView.vue';
 import AnalyticsView from '../views/AnalyticsView.vue';
 import StaffManagerView from '../views/StaffManagerView.vue';
 import TenantSettingsView from '../views/TenantSettingsView.vue';
+import SuperAdminTenantsView from '../views/SuperAdminTenantsView.vue';
+import SuperAdminAnalyticsView from '../views/SuperAdminAnalyticsView.vue';
+import SuperAdminUsersView from '../views/SuperAdminUsersView.vue';
 import AdminLayout from '../layouts/AdminLayout.vue';
 import { authService } from '../services/auth.service';
 
@@ -52,6 +55,21 @@ const router = createRouter({
           path: '/admin/settings',
           name: 'admin-settings',
           component: TenantSettingsView,
+        },
+        {
+          path: '/admin/tenants',
+          name: 'superadmin-tenants',
+          component: SuperAdminTenantsView,
+        },
+        {
+          path: '/admin/global-analytics',
+          name: 'superadmin-analytics',
+          component: SuperAdminAnalyticsView,
+        },
+        {
+          path: '/admin/global-users',
+          name: 'superadmin-users',
+          component: SuperAdminUsersView,
         }
       ]
     },
@@ -69,15 +87,39 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const publicPages = ['/login', '/register'];
-  const authRequired = !publicPages.includes(to.path);
+  const publicPages = ['/login', '/register', '/'];
+  // Allow order-success as pseudo public if someone shares it
+  const isOrderSuccess = to.path.startsWith('/order-success');
+  const authRequired = !publicPages.includes(to.path) && !isOrderSuccess;
   const loggedIn = authService.getCurrentUser();
 
   if (authRequired && !loggedIn) {
-    next('/login');
-  } else {
-    next();
+    return next('/login');
   }
+
+  if (loggedIn) {
+    const role = loggedIn.role ? loggedIn.role.toUpperCase() : '';
+    
+    // Super User strict routing enforcement
+    if (role === 'SUPER_USER') {
+      const allowedSuperUserRoutes = ['/admin/tenants', '/admin/global-analytics', '/admin/global-users'];
+      // Allow super user to see their own panel, but block from operational routes
+      if (!allowedSuperUserRoutes.includes(to.path) && !publicPages.includes(to.path)) {
+        return next('/admin/tenants');
+      }
+    }
+    
+    // Admin/Employee strict routing enforcement
+    if (role === 'ADMIN' && to.path === '/admin/tenants') {
+      return next('/cashier');
+    }
+    
+    if (role === 'EMPLOYEE' && to.path.startsWith('/admin')) {
+      return next('/cashier');
+    }
+  }
+
+  next();
 });
 
 export default router;

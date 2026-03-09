@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import { Order } from '../entities/order.entity';
 import { OrderItem } from '../entities/order-item.entity';
+import { User } from '../entities/user.entity';
+import { Tenant } from '../entities/tenant.entity';
 import { OrderStatus } from '../common/enums/database.enum';
 
 @Injectable()
@@ -12,6 +14,10 @@ export class AnalyticsService {
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(OrderItem)
     private readonly orderItemRepository: Repository<OrderItem>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Tenant)
+    private readonly tenantRepository: Repository<Tenant>,
   ) {}
 
   async getSalesSummary(tenantId: number) {
@@ -49,6 +55,25 @@ export class AnalyticsService {
       month: {
         total: parseFloat(monthSales.total) || 0,
       }
+    };
+  }
+
+  async getGlobalSummary() {
+    const totalTenants = await this.tenantRepository.count({ where: { isActive: true } });
+    const totalUsers = await this.userRepository.count();
+    
+    const globalSales = await this.orderRepository
+      .createQueryBuilder('order')
+      .select('SUM(order.totalAmount)', 'totalRevenue')
+      .addSelect('COUNT(order.id)', 'totalOrders')
+      .where('order.status = :status', { status: OrderStatus.PAID })
+      .getRawOne();
+
+    return {
+      activeTenants: totalTenants,
+      totalUsers: totalUsers,
+      totalOrders: parseInt(globalSales.totalOrders) || 0,
+      totalRevenue: parseFloat(globalSales.totalRevenue) || 0,
     };
   }
 
