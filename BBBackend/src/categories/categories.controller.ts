@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, UseGuards, Optional } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, UseGuards, BadRequestException } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../common/enums/database.enum';
@@ -28,6 +29,7 @@ export class CategoriesController {
   }
 
   @Get()
+  @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({ summary: 'Obtener todas las categorías de un local' })
   @ApiQuery({ name: 'tenantId', type: Number, required: false, description: 'Opcional si está logueado como Staff' })
   @ApiResponse({ status: 200, description: 'Lista recuperada' })
@@ -40,7 +42,7 @@ export class CategoriesController {
     const finalTenantId = tokenTenantId || (queryTenantId ? Number(queryTenantId) : null);
     
     if (!finalTenantId) {
-      throw new Error('Tenant ID is required (either via token or query)');
+      throw new BadRequestException('Tenant ID is required (either via token or query)');
     }
     
     return this.categoriesService.findAll(finalTenantId);

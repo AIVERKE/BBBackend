@@ -50,6 +50,38 @@ npm run dev
 
 ---
 
+## 👥 Usuarios de Prueba (Seeds)
+
+Al ejecutar el comando `npm run seed` en el Backend, se generan datos y usuarios de prueba para facilitar el desarrollo. Todos los usuarios tienen la misma contraseña:
+
+**Contraseña para todos los usuarios:** `password123`
+
+### Super Administrador Global
+- **Email:** `super@orko.com`
+- **Rol:** `SUPER_USER`
+
+### Tenants (Negocios)
+Se crean 3 negocios de prueba. Para cada uno se generan los siguientes accesos:
+
+**1. Restaurante Gourmet Orko:**
+- **Admin:** `admin@restaurantegourmetorko.com`
+- **Staff 1:** `staff1@restaurantegourmetorko.com`
+- **Staff 2:** `staff2@restaurantegourmetorko.com`
+
+**2. Cafetería Central:**
+- **Admin:** `admin@cafeteríacentral.com`
+- **Staff 1:** `staff1@cafeteríacentral.com`
+- **Staff 2:** `staff2@cafeteríacentral.com`
+
+**3. Bar La Noche:**
+- **Admin:** `admin@barlanoche.com`
+- **Staff 1:** `staff1@barlanoche.com`
+- **Staff 2:** `staff2@barlanoche.com`
+
+> **Nota:** También se generan clientes (ej. `cliente1_1`, `cliente2_1`...) y datos falsos de categorías, productos, pedidos y asistencias para evaluar la plataforma al instante.
+
+---
+
 ## 🏗️ Arquitectura y Tecnologías
 
 ### Backend (NestJS)

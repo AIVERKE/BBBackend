@@ -146,12 +146,14 @@ const tenant = ref<Tenant | null>(null);
 const mobileMenuOpen = ref(false);
 
 const isAdmin = computed(() => {
-  return currentUser.value && (currentUser.value.role === 'admin' || currentUser.value.role === 'superuser');
+  if (!currentUser.value || !currentUser.value.role) return false;
+  const r = currentUser.value.role.toUpperCase();
+  return r === 'ADMIN' || r === 'SUPER_USER';
 });
 
 onMounted(async () => {
   const user = authService.getCurrentUser();
-  if (!user || user.role === 'customer') {
+  if (!user || user.role?.toUpperCase() === 'CUSTOMER') {
     router.push('/login');
     return;
   }

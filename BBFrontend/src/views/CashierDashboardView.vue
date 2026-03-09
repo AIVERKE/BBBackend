@@ -40,7 +40,7 @@
         </div>
         
         <!-- Action Card: Scan QR -->
-        <div class="md:col-span-2 glass-aero rounded-3xl p-6 bg-gradient-to-r from-primary to-primary/80 border border-white/20 shadow-lg shadow-primary/30 text-white flex items-center justify-between cursor-pointer hover:scale-[1.01] transition-transform">
+        <div @click="scanQrCode" class="md:col-span-2 glass-aero rounded-3xl p-6 bg-gradient-to-r from-primary to-primary/80 border border-white/20 shadow-lg shadow-primary/30 text-white flex items-center justify-between cursor-pointer hover:scale-[1.01] transition-transform">
           <div>
             <h2 class="text-2xl font-extrabold mb-2">Scan New Order</h2>
             <p class="text-white/80 text-sm max-w-sm">Use the camera to scan a customer's QR code or select an order from the pending queue below.</p>
@@ -213,7 +213,7 @@ const fetchData = async () => {
 
 onMounted(async () => {
   const user = authService.getCurrentUser();
-  if (!user || user.role === 'customer') {
+  if (!user || user.role?.toUpperCase() === 'CUSTOMER') {
     router.push('/login');
     return;
   }
@@ -229,6 +229,18 @@ onMounted(async () => {
   
   fetchData();
 });
+
+const scanQrCode = () => {
+  const token = prompt('Scanner simulated! Please enter or scan the QR Code string (UUID):');
+  if (token && token.trim() !== '') {
+    const order = pendingOrders.value.find(o => o.qrToken === token.trim());
+    if (order) {
+      openPaymentModal(order);
+    } else {
+      alert('Order not found or already paid in this queue. Please verify the QR code.');
+    }
+  }
+};
 
 const openPaymentModal = (order: OrderResponse) => {
   selectedOrder.value = order;

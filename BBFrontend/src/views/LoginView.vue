@@ -179,7 +179,8 @@ const handleLogin = async () => {
     // If the input contains an @, treat it as a Staff email login, otherwise Customer username.
     if (username.value.includes('@')) {
       const response = await authService.loginUser(username.value, password.value);
-      if (response.role === 'ADMIN' || response.role === 'EMPLOYEE' || response.role === 'SUPER_USER') {
+      const r = response.role ? response.role.toUpperCase() : '';
+      if (r === 'ADMIN' || r === 'EMPLOYEE' || r === 'SUPER_USER') {
         router.push('/cashier');
       } else {
         router.push('/');
